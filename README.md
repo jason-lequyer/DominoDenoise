@@ -68,7 +68,7 @@ To find the PSNR and SSIM between a folder containing denoised results and the c
 
 ```python
 conda activate DD
-conda install -c anaconda scikit-image=0.17.2
+conda install -c anaconda scikit-image=0.19.2
 ```
 
 Now we measure accuracy with the code:
