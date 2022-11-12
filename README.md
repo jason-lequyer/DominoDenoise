@@ -14,7 +14,7 @@ conda install -c pytorch pytorch=1.12.0
 conda install -c conda-forge tifffile=2021.7.2
 conda install -c anaconda scipy=1.7.3
 ```
-If the installs don't work, removing the specific version may fix this (to do this remove everything after the equals sign, including the equals sign e.g. conda install -c conda-forge tifffile).
+If the installs don't work, removing the specific version may fix this (to do this remove everything after the equals sign, including the equals sign. E.g. conda install -c conda-forge tifffile).
 # Using Domino Denoise on your 2D grayscale data
 
 Create a folder in the master directory (the directory that contains DD.py) and put your noisy images into it. Then open anaconda prompt/terminal and run the following:
