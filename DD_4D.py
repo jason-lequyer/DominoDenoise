@@ -158,8 +158,8 @@ if __name__ == "__main__":
             continue
         start_time = time.time()
         if v>0:
-            print("--- %s seconds ---" % (time.time() - start_time))
             print('100% complete')
+            print("--- %s seconds ---" % (time.time() - start_time))
         print(file_name)
 
         

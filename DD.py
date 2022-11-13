@@ -157,8 +157,8 @@ if __name__ == "__main__":
         file_name =  file_list[v]
         #file_name = '05.tif'
         if v>0:
-            print("--- %s seconds ---" % (time.time() - start_time))
             print('100% complete')
+            print("--- %s seconds ---" % (time.time() - start_time)) 
         start_time = time.time()
         print(file_name)
         print('0% complete (estimated)')
