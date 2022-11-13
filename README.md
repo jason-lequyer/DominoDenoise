@@ -63,10 +63,12 @@ conda install -c anaconda scikit-image=0.19.2
 Now we measure accuracy with the code:
 ```terminal
 cd <masterdirectoryname>
-python compute_psnr_ssim.py Set12_gaussian25_DD Set12
+python compute_psnr_ssim.py Set12_gaussian25_DD Set12 255
 ```
 
 You can replace 'Set12' and 'Set12_gaussian25' with any pair of denoised/ground truth folders (order doesn't matter). Average PSNR and SSIM will be returned for the entire set.
+
+The '255' at the end denotes the dynamic range of the image, in the case of the 8-bit images from Set12, 255 is a sensible value. For the Microscope data, setting it to 700 will replicate the results from our paper.
   
 
   
