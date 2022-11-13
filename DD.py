@@ -301,7 +301,6 @@ if __name__ == "__main__":
         
         imgflat_black = torch.from_numpy(imgZ.copy()).to(device).view(-1)
         imgflat_black[black] = imgflat_black[white][match_black[1]]
-        imwrite('black.tif',imgflat_black.view(imgZ.shape[0],imgZ.shape[1]).cpu().detach().numpy()*maxer+minner)
 
         left_white = left[white] 
         right_white = right[white]
@@ -341,13 +340,6 @@ if __name__ == "__main__":
         
         imgflat_white = torch.from_numpy(imgZ.copy()).to(device).view(-1)
         imgflat_white[white] = imgflat_white[black][match_white[1]]
-        imwrite('white.tif',imgflat_white.view(imgZ.shape[0],imgZ.shape[1]).cpu().detach().numpy()*maxer+minner)
-  
-        both = torch.from_numpy(imgZ.copy()).to(device).view(-1)
-        both[white] = imgflat_white[white]
-        both[black] = imgflat_black[black]
-        imwrite('both.tif',both.view(imgZ.shape[0],imgZ.shape[1]).cpu().detach().numpy()*maxer+minner)
-        
         
         
 
