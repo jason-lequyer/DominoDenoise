@@ -1,7 +1,7 @@
 # Domino Denoise
 
 # Installation
-First download our code by clicking code->download in the top right corner and unzip it on your computer.
+First download our code by clicking Code -> Download ZIP in the top right corner and unzip it on your computer.
 
 If you don't already have anaconda, install it by following instructions at this link: https://docs.anaconda.com/anaconda/install/.
 
