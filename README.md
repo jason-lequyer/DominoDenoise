@@ -91,5 +91,6 @@ We can run DIP and Noise2Self in the DD environment:
 conda activate DD
 python DIP.py Microscope_gaussianpoisson
 python N2S.py Microscope_gaussianpoisson
+python P2S.py Microscope_gaussianpoisson
 ```
 
