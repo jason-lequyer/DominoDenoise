@@ -187,7 +187,11 @@ if __name__ == "__main__":
 
             img = inp[oz,:,:]
             typer = type(inp[0,0,0])
-        
+            
+            if typer == np.bool_:
+                typer = np.uint8
+                img = img.astype(np.uint8)
+            
             minner = np.amin(img)
             img = img - minner
             maxer = np.amax(img)
