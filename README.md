@@ -10,11 +10,11 @@ It would also be helpful to have ImageJ installed: https://imagej.nih.gov/ij/dow
 Open Anaconda Prompt (or terminal if on Mac/Linux) and enter the following commands to create a new conda environment and install the required packages:
 
 ```python
-conda create --name DD
+conda create --name "DD" python=3.10.8
 conda activate DD
 conda install -c pytorch pytorch=1.12.0
-conda install -c conda-forge tifffile=2021.7.2
-conda install -c anaconda scipy=1.7.3
+conda install -c conda-forge tifffile=2021.4.8
+conda install -c anaconda scipy=1.9.3
 ```
 If the installs don't work, removing the specific version may fix this. To do this, remove everything after the equals sign, including the equals sign (e.g. conda install -c conda-forge tifffile).
 # Using Domino Denoise on your 2D grayscale data
