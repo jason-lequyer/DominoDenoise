@@ -12,7 +12,7 @@ Open Anaconda Prompt (or terminal if on Mac/Linux) and enter the following comma
 ```python
 conda create --name "DD" python=3.10.8
 conda activate DD
-conda install -c pytorch pytorch=1.12.0
+conda install -c pytorch pytorch=1.13.0
 conda install -c conda-forge tifffile=2021.4.8
 conda install -c anaconda scipy=1.9.3
 ```
