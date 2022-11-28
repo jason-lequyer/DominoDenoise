@@ -155,25 +155,16 @@ if __name__ == "__main__":
         
         
         file_name =  file_list[v]
-        #file_name = '05.tif'
-        if v>0:
-            print('100% complete')
-            print("--- %s seconds ---" % (time.time() - start_time)) 
+        #file_name = '10.tif'
+
         start_time = time.time()
         print(file_name)
-        print('0% complete (estimated)')
-        sys.stdout.write("\033[F")
-        sys.stdout.write("\033[K")
         if file_name[0] == '.':
             continue
         
         img = imread(folder + '/' + file_name)
         
         typer = type(img[0,0])
-        
-        if typer == np.bool_:
-            typer = np.uint8
-            img = img.astype(np.uint8)
         
         minner = np.amin(img)
         img = img - minner
@@ -396,6 +387,12 @@ if __name__ == "__main__":
         countdown = 1
         
         countso = 500
+        
+        last14img = [0]*37
+        last9pct = [0]*15
+        last10window = list(range(-30,0))
+        
+        maskert0 = torch.ones_like(bothap).to(device)
 
         while goodo:
             counter += 1
@@ -456,7 +453,6 @@ if __name__ == "__main__":
                     if coinflip == 0:
                         imgdown = bothap
                         
-                        maskert0 = torch.ones_like(imgdown)
                         outputs = net(imgdown,maskert0)
                         outputs = outputs[0,0,:,:].cpu().detach().numpy()
                         outputs = outputs*maxer+minner
@@ -465,18 +461,12 @@ if __name__ == "__main__":
                     elif coinflip == 1:
                         imgdown = imgup
                         
-                        maskert0 = torch.ones_like(imgdown)
                         outputs = net(imgdown,maskert0)
                         outputs = outputs[0,0,:,:].cpu().detach().numpy()
                         outputs = outputs*maxer+minner
                         keepall[1] += outputs
                         keepallcounter2+=1
                         
-
-            if counter == 750:
-                print('6% complete (estimated)')
-                sys.stdout.write("\033[F")
-                sys.stdout.write("\033[K")
             if counter % countso == (countso-1) and counter > countso:
                 
                 
@@ -484,7 +474,7 @@ if __name__ == "__main__":
                 V0 = keepall[1]/keepallcounter2
                 H0 = H0*whitet
                 V0 = V0*blackt
-                unfold64 = nn.Unfold(kernel_size=(32, 32), stride=32)
+                unfold64 = nn.Unfold(kernel_size=(1, 1), stride=1)
                 H0 = torch.from_numpy(H0).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
                 V0 = torch.from_numpy(V0).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
                 
@@ -509,37 +499,43 @@ if __name__ == "__main__":
                 curpct = (np.sum(newval>lastval)/len(newval>lastval))
                 if lastpct is None:
                     lastpct = curpct
-                if curpct == 0:
-                    walk+=0
-                elif curpct == 1:
-                    goodo=False
-                elif curpct >= lastpct:
-                    walk +=1
-                    if maxwalk < walk:
-                        maxwalk = walk
-                        print(str(int(100*(maxwalk+1)/16))+'% complete (estimated)')
-                        sys.stdout.write("\033[F")
-                        sys.stdout.write("\033[K")
-                else:
-                    walk = max(0,walk-1)
                 lastpct = curpct
-                if walk >= 15:
-                    goodo = False
 
+                    
+                lastval = newval
                 
-                if  goodo == False:
-                    for iw in range(len(ifunctions)):
-                        last10blind[iw] = ifunctions[iw](last10blind[iw])
-                        last10mask[iw] = ifunctions[iw](last10mask[iw])
-                    last10blind = np.sum(np.stack(last10blind), axis=0)
-                    last10mask = np.sum(np.stack(last10mask), axis=0)
-                    H2 = last10blind/last10mask
+                last10blindfin = last10blind.copy()
+                last10maskfin = last10mask.copy()
+                for iw in range(len(ifunctions)):
+                    last10blindfin[iw] = ifunctions[iw](last10blind[iw])
+                    last10maskfin[iw] = ifunctions[iw](last10mask[iw])
+                last10blindfin = np.sum(np.stack(last10blindfin), axis=0)
+                last10maskfin = np.sum(np.stack(last10maskfin), axis=0)
+                H2 = last10blindfin/last10maskfin
+                #print(counter+1)
+                
+                last9pct.append(curpct)
+                last9pct.pop(0)
+                last14img.append(H2)
+                last14img.pop(0)
+                last10window.append(np.mean(last9pct))
+                last10window.pop(0)
+                
+                if np.argmax(last10window) == 0:
+                    goodo = False
+                    H2 = last14img[0]
+                
+                keepall[0] = 0*keepall[0]
+                keepall[1] = 0*keepall[1]
+                keepallcounter = 0
+                keepallcounter2 = 0
+                
                     
 
                 
         imwrite(outfolder + '/' + file_name, H2.astype(typer))
         
-        
+        print("--- %s seconds ---" % (time.time() - start_time)) 
 
 
         
