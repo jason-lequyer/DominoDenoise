@@ -1,4 +1,4 @@
-#Copyright 2021, Jason Lequyer and Laurence Pelletier, All rights reserved.
+#Copyright 2022, Jason Lequyer and Laurence Pelletier, All rights reserved.
 #Sinai Health SystemLunenfeld-Tanenbaum Research Institute
 #600 University Avenue, Room 1070
 #Toronto, ON, M5G 1X5, Canada
@@ -9,13 +9,10 @@ import torch.nn.functional as F
 import os
 from tifffile import imread, imwrite
 import sys
-import torch.utils.data as utils_data
 import numpy as np
 from pathlib import Path
 import time
-from scipy.sparse import csr_matrix, csc_matrix, vstack, hstack, coo_matrix
-import scipy.sparse.linalg as spl
-import math
+from scipy.sparse import coo_matrix
 import scipy.sparse.csgraph as ssc
 
 
@@ -153,16 +150,13 @@ if __name__ == "__main__":
     
     for v in range(len(file_list)):
         
+        
         file_name =  file_list[v]
+
+        start_time = time.time()
+        print(file_name)
         if file_name[0] == '.':
             continue
-        start_time = time.time()
-        if v>0:
-            print('100% complete')
-            print("--- %s seconds ---" % (time.time() - start_time))
-        print(file_name)
-
-        
         
         inp = imread(folder + '/' + file_name)
         if inp.shape[-1] == 3:
@@ -174,24 +168,13 @@ if __name__ == "__main__":
         out = np.zeros(inp.shape, dtype=np.float32)
         for oz in range(inp.shape[0]):
             start_time = time.time()
-            
-            if oz>0:
-                sys.stdout.write("\033[F")
-                sys.stdout.write("\033[K")
 
-            
             print('Slice '+str(oz+1)+'/'+str(inp.shape[0]))
-            print('0% complete (estimated)')
-            sys.stdout.write("\033[F")
-            sys.stdout.write("\033[K")
 
             img = inp[oz,:,:]
             typer = type(inp[0,0,0])
-            
-            if typer == np.bool_:
-                typer = np.uint8
-                img = img.astype(np.uint8)
-            
+        
+        
             minner = np.amin(img)
             img = img - minner
             maxer = np.amax(img)
@@ -205,7 +188,7 @@ if __name__ == "__main__":
             if shape[0] % 2 == 1:
                 Zshape[0] -= 1
             if shape[1] % 2 == 1:
-                Zshape[1] -= 1  
+                Zshape[1] -=1  
             imgZ = img[:Zshape[0],:Zshape[1]]
             
             imgZ = imgZ[:,:]
@@ -361,7 +344,6 @@ if __name__ == "__main__":
             
             imgflat_white = torch.from_numpy(imgZ.copy()).to(device).view(-1)
             imgflat_white[white] = imgflat_white[black][match_white[1]]
-      
             
             
     
@@ -392,6 +374,12 @@ if __name__ == "__main__":
             imgup =  imgflat_white.view(1,1,imgZ.shape[0],imgZ.shape[1])
             bothapcpu = (bothap[0,0,:,:].cpu().detach().numpy()*maxer+minner)*blackt
             imgupcpu =  (imgup[0,0,:,:].cpu().detach().numpy()*maxer+minner)*whitet
+            imgupcpunow = torch.from_numpy(imgupcpu).view(1,1,imgZ.shape[0],imgZ.shape[1])
+            bothapcpunow = torch.from_numpy(bothapcpu).view(1,1,imgZ.shape[0],imgZ.shape[1])
+            
+            imgupcpunow = imgupcpunow.view(-1)
+            bothapcpunow = bothapcpunow.view(-1)
+            
             running_loss1=0.0
             last10mask = []
             last10blind = []
@@ -403,17 +391,18 @@ if __name__ == "__main__":
     
             keepallcounter = 0
             keepallcounter2 = 0
-            cleaned = 0
             counter = 0
-            walk = 0
-            lastpct = None
             goodo = True
             lastval = None
-            maxwalk = -1
             newval = np.inf
-            countdown = 1
             
             countso = 500
+            
+            last14img = [0]*37
+            last9pct = [0]*15
+            last10window = list(range(-30,0))
+            
+            maskert0 = torch.ones_like(bothap).to(device)
     
             while goodo:
                 counter += 1
@@ -474,7 +463,6 @@ if __name__ == "__main__":
                         if coinflip == 0:
                             imgdown = bothap
                             
-                            maskert0 = torch.ones_like(imgdown)
                             outputs = net(imgdown,maskert0)
                             outputs = outputs[0,0,:,:].cpu().detach().numpy()
                             outputs = outputs*maxer+minner
@@ -483,18 +471,12 @@ if __name__ == "__main__":
                         elif coinflip == 1:
                             imgdown = imgup
                             
-                            maskert0 = torch.ones_like(imgdown)
                             outputs = net(imgdown,maskert0)
                             outputs = outputs[0,0,:,:].cpu().detach().numpy()
                             outputs = outputs*maxer+minner
                             keepall[1] += outputs
                             keepallcounter2+=1
                             
-    
-                if counter == 750:
-                    print('6% complete (estimated)')
-                    sys.stdout.write("\033[F")
-                    sys.stdout.write("\033[K")
                 if counter % countso == (countso-1) and counter > countso:
                     
                     
@@ -502,22 +484,15 @@ if __name__ == "__main__":
                     V0 = keepall[1]/keepallcounter2
                     H0 = H0*whitet
                     V0 = V0*blackt
-                    unfold64 = nn.Unfold(kernel_size=(32, 32), stride=32)
-                    H0 = torch.from_numpy(H0).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                    V0 = torch.from_numpy(V0).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                    
-                    H0 = unfold64(H0)
-                    V0 = unfold64(V0)
-                    
-                    imgupcpunow = torch.from_numpy(imgupcpu).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                    bothapcpunow = torch.from_numpy(bothapcpu).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                    
-                    imgupcpunow = unfold64(imgupcpunow)
-                    bothapcpunow = unfold64(bothapcpunow)
-                    
-                    newval1 = torch.sum((imgupcpunow - H0)**2,axis=1)[0,:].cpu().detach().numpy()
-                    newval2 = torch.sum((bothapcpunow - V0)**2,axis=1)[0,:].cpu().detach().numpy()
-                    
+    
+                    H0 = torch.from_numpy(H0).view(-1)
+                    V0 = torch.from_numpy(V0).view(-1)
+    
+    
+                    with torch.no_grad():
+                        newval1 = ((imgupcpunow - H0)**2).cpu().detach().numpy()
+                        newval2 = ((bothapcpunow - V0)**2).cpu().detach().numpy()
+    
                     
                     newval = newval1+newval2
                     
@@ -525,44 +500,44 @@ if __name__ == "__main__":
                     if lastval is None:
                         lastval = newval
                     curpct = (np.sum(newval>lastval)/len(newval>lastval))
-                    if lastpct is None:
-                        lastpct = curpct
-                    if curpct == 0:
-                        walk+=0
-                    elif curpct == 1:
-                        goodo=False
-                    elif curpct >= lastpct:
-                        walk +=1
-                        if maxwalk < walk:
-                            maxwalk = walk
-                            print(str(int(100*(maxwalk+1)/16))+'% complete (estimated)')
-                            sys.stdout.write("\033[F")
-                            sys.stdout.write("\033[K")
-                            
-                    else:
-                        walk = max(0,walk-1)
-                    lastpct = curpct
-                    if walk >= 15:
-                        goodo = False
-    
-                    
-                    if  goodo == False:
-                        for iw in range(len(ifunctions)):
-                            last10blind[iw] = ifunctions[iw](last10blind[iw])
-                            last10mask[iw] = ifunctions[iw](last10mask[iw])
-                        last10blind = np.sum(np.stack(last10blind), axis=0)
-                        last10mask = np.sum(np.stack(last10mask), axis=0)
-                        H2 = last10blind/last10mask
-                        out[oz,:,:] = H2
                         
-            torch.cuda.empty_cache()
+                    lastval = newval
                     
+                    last10blindfin = last10blind.copy()
+                    last10maskfin = last10mask.copy()
+                    for iw in range(len(ifunctions)):
+                        last10blindfin[iw] = ifunctions[iw](last10blind[iw])
+                        last10maskfin[iw] = ifunctions[iw](last10mask[iw])
+                    last10blindfin = np.sum(np.stack(last10blindfin), axis=0)
+                    last10maskfin = np.sum(np.stack(last10maskfin), axis=0)
+                    H2 = last10blindfin/last10maskfin
+                    #print(counter+1)
+                    
+                    last9pct.append(curpct)
+                    last9pct.pop(0)
+                    last14img.append(H2)
+                    last14img.pop(0)
+                    last10window.append(np.mean(last9pct))
+                    last10window.pop(0)
+                    
+                    if np.argmax(last10window) == 0:
+                        goodo = False
+                        H2 = last14img[0]
+                    
+                    keepall[0] = 0*keepall[0]
+                    keepall[1] = 0*keepall[1]
+                    keepallcounter = 0
+                    keepallcounter2 = 0
+                    
+                        
+    
+                    
+            out[oz,:,:] = H2
+            
+            print("--- %s seconds ---" % (time.time() - start_time)) 
+            torch.cuda.empty_cache()
+    
         out = out.reshape(ogshape)
-        imwrite(outfolder + '/' + file_name, out.astype(typer), imagej=True)
+        imwrite(outfolder + '/' + file_name, out.astype(typer), imagej=True)    
             
             
-    
-    
-            
-            
-
