@@ -94,5 +94,6 @@ conda activate DD
 python DIP.py Microscope_gaussianpoisson
 python N2S.py Microscope_gaussianpoisson
 python P2S.py Microscope_gaussianpoisson
+python N2FDOM.py Microscope_gaussianpoisson
 ```
 
