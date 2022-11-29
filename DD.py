@@ -1,4 +1,4 @@
-#Copyright 2021, Jason Lequyer and Laurence Pelletier, All rights reserved.
+#Copyright 2022, Jason Lequyer and Laurence Pelletier, All rights reserved.
 #Sinai Health SystemLunenfeld-Tanenbaum Research Institute
 #600 University Avenue, Room 1070
 #Toronto, ON, M5G 1X5, Canada
@@ -9,13 +9,10 @@ import torch.nn.functional as F
 import os
 from tifffile import imread, imwrite
 import sys
-import torch.utils.data as utils_data
 import numpy as np
 from pathlib import Path
 import time
-from scipy.sparse import csr_matrix, csc_matrix, vstack, hstack, coo_matrix
-import scipy.sparse.linalg as spl
-import math
+from scipy.sparse import coo_matrix
 import scipy.sparse.csgraph as ssc
 
 
@@ -155,7 +152,6 @@ if __name__ == "__main__":
         
         
         file_name =  file_list[v]
-        #file_name = '10.tif'
 
         start_time = time.time()
         print(file_name)
@@ -365,6 +361,12 @@ if __name__ == "__main__":
         imgup =  imgflat_white.view(1,1,imgZ.shape[0],imgZ.shape[1])
         bothapcpu = (bothap[0,0,:,:].cpu().detach().numpy()*maxer+minner)*blackt
         imgupcpu =  (imgup[0,0,:,:].cpu().detach().numpy()*maxer+minner)*whitet
+        imgupcpunow = torch.from_numpy(imgupcpu).view(1,1,imgZ.shape[0],imgZ.shape[1])
+        bothapcpunow = torch.from_numpy(bothapcpu).view(1,1,imgZ.shape[0],imgZ.shape[1])
+        
+        imgupcpunow = imgupcpunow.view(-1)
+        bothapcpunow = bothapcpunow.view(-1)
+        
         running_loss1=0.0
         last10mask = []
         last10blind = []
@@ -376,15 +378,10 @@ if __name__ == "__main__":
 
         keepallcounter = 0
         keepallcounter2 = 0
-        cleaned = 0
         counter = 0
-        walk = 0
-        lastpct = None
         goodo = True
         lastval = None
-        maxwalk = -1
         newval = np.inf
-        countdown = 1
         
         countso = 500
         
@@ -474,22 +471,15 @@ if __name__ == "__main__":
                 V0 = keepall[1]/keepallcounter2
                 H0 = H0*whitet
                 V0 = V0*blackt
-                unfold64 = nn.Unfold(kernel_size=(1, 1), stride=1)
-                H0 = torch.from_numpy(H0).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                V0 = torch.from_numpy(V0).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                
-                H0 = unfold64(H0)
-                V0 = unfold64(V0)
-                
-                imgupcpunow = torch.from_numpy(imgupcpu).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                bothapcpunow = torch.from_numpy(bothapcpu).view(1,1,imgZ.shape[0],imgZ.shape[1]).to(device)
-                
-                imgupcpunow = unfold64(imgupcpunow)
-                bothapcpunow = unfold64(bothapcpunow)
-                
-                newval1 = torch.sum((imgupcpunow - H0)**2,axis=1)[0,:].cpu().detach().numpy()
-                newval2 = torch.sum((bothapcpunow - V0)**2,axis=1)[0,:].cpu().detach().numpy()
-                
+
+                H0 = torch.from_numpy(H0).view(-1)
+                V0 = torch.from_numpy(V0).view(-1)
+
+
+                with torch.no_grad():
+                    newval1 = ((imgupcpunow - H0)**2).cpu().detach().numpy()
+                    newval2 = ((bothapcpunow - V0)**2).cpu().detach().numpy()
+
                 
                 newval = newval1+newval2
                 
@@ -497,10 +487,6 @@ if __name__ == "__main__":
                 if lastval is None:
                     lastval = newval
                 curpct = (np.sum(newval>lastval)/len(newval>lastval))
-                if lastpct is None:
-                    lastpct = curpct
-                lastpct = curpct
-
                     
                 lastval = newval
                 
