@@ -87,7 +87,7 @@ The '255' at the end denotes the dynamic range of the image, in the case of the 
   
 # Running compared methods
 
-We can run DIP, Noise2Self and P2S in the DD environment:
+We can run DIP, Noise2Self, P2S and N2F+DOM in the DD environment:
 
 ```python
 conda activate DD
