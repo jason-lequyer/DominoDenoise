@@ -101,3 +101,5 @@ python P2S.py Microscope_gaussianpoisson
 python N2FDOM.py Microscope_gaussianpoisson
 ```
 
+# References
+Lequyer, J., Hsu, W.-H., Philip, R., Erpf, A. C., & Pelletier, L. (2022). Domino Denoise: An Accurate Blind Zero-Shot Denoiser using Domino Tilings. arXiv. https://doi.org/10.48550/ARXIV.2212.02439
