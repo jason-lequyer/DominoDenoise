@@ -15,7 +15,7 @@ import time
 from scipy.sparse import coo_matrix
 import scipy.sparse.csgraph as ssc
 
-
+#ParticalConv2D is based on https://github.com/NVIDIA/partialconv
 class PartialConv2d(nn.Conv2d):
     def __init__(self, *args, **kwargs):
 
