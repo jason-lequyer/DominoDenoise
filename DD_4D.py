@@ -520,7 +520,7 @@ if __name__ == "__main__":
                     last10window.append(np.mean(last9pct))
                     last10window.pop(0)
                     
-                    if np.argmax(last10window) == 0:
+                    if np.argmax(last10window) == 0 and not (last14img[0] is None):
                         goodo = False
                         H2 = last14img[0]
                     
