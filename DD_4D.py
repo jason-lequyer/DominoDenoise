@@ -15,8 +15,6 @@ import time
 from scipy.sparse import coo_matrix
 import scipy.sparse.csgraph as ssc
 
-#
-
 
 
 
@@ -25,7 +23,7 @@ import scipy.sparse.csgraph as ssc
 if __name__ == "__main__":
     functions = [lambda x: x, lambda x: np.rot90(x), lambda x: np.rot90(np.rot90(x)), lambda x: np.rot90(np.rot90(np.rot90(x))), lambda x: np.flipud(x), lambda x: np.fliplr(x), lambda x: np.rot90(np.fliplr(x)), lambda x: np.fliplr(np.rot90(x))]
     ifunctions = [lambda x: x, lambda x: np.rot90(x,-1), lambda x: np.rot90(np.rot90(x,-1),-1), lambda x: np.rot90(np.rot90(np.rot90(x,-1),-1),-1), lambda x: np.flipud(x), lambda x: np.fliplr(x), lambda x: np.rot90(np.fliplr(x)), lambda x: np.fliplr(np.rot90(x))]
-    folder = 'ferrisvalid'
+    folder = sys.argv[1]
     outfolder = folder+'_DD'
     Path(outfolder).mkdir(exist_ok=True)
         
@@ -548,4 +546,7 @@ if __name__ == "__main__":
             torch.cuda.empty_cache()
     
         out = out.reshape(ogshape)
-        imwrite(outfolder + '/' + file_name, out.astype(typer), imagej=True) 
+        try:
+            imwrite(outfolder + '/' + file_name, np.round(out).astype(typer), imagej=True)
+        except:
+            imwrite(outfolder + '/' + file_name, np.round(out).astype(np.float32), imagej=True)
