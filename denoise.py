@@ -181,7 +181,7 @@ if __name__ == "__main__":
     typer = type(inp[0,0,0])
     
     inp = inp.astype(np.float32)
-    oz = int(sys.argv[2])
+    oz = int(sys.argv[2]) + 1
     
     out = inp.copy()
 
