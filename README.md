@@ -16,11 +16,51 @@ Open Anaconda Prompt (or terminal if on Mac/Linux) and enter the following comma
 ```python
 conda create --name DD
 conda activate DD
-conda install -c pytorch pytorch=1.12.0
-conda install -c conda-forge tifffile=2021.7.2
-conda install -c anaconda scipy=1.7.3
+conda install pytorch::pytorch=2.4.0
+conda install conda-forge::tifffile=2023.2.28
+conda install anaconda::pandas=2.2.2
+conda install anaconda::scipy=1.13.1
 ```
-If the installs don't work, removing the specific version may fix this. To do this, remove everything after the equals sign, including the equals sign (e.g. conda install -c conda-forge tifffile).
+
+If the installs don't work, removing the specific version may fix this. To do this, remove everything after the equals sign, including the equals sign (e.g. conda install pytorch::pytorch).
+
+# Using DD on IMC and other highly multiplexed data
+(Note: The program expects tiff stacks for input IMC data. If your data is saved as a sequence of individual channel files, open ImageJ and go File->Import->Image Sequence, select the folder containing the individual channels and click Open. Once open go Image->Stacks->Images to Stack and then save the resulting image stack, this file should work with RefineOT.)
+
+To run the debleeder create a folder in the master directory (the directory that contains debleed.py) and put your raw IMC images into it. Then open anaconda prompt/terminal and run the following:
+
+```python
+cd <masterdirectoryname>
+conda activate DD
+python debleed.py <imcfolder>/<imcfilename> <channel_to_debleed>
+```
+
+Replacing "masterdirectoryname" with the full path to the directory that contains debleed.py. For example, to apply this to the 21st channel of the IMC_smallcrop data (using 1-indexing) included in this repository we would run:
+
+```python
+cd <masterdirectoryname>
+conda activate DD
+python debleed.py IMC_smallcrop/IMC_smallcrop.tif 21
+```
+ 
+For best results on IMC, you should supply a veto matrix of channels you do not want to be considered when debleeding the target channel. For format, see IMC_smallcrop_withcsv/IMC_smallcrop.csv. Eseentially the columns and rows list each channel, and a 0 in (x,y) indicates that row x's channel will NOT be considered when debleeding the column y's channel. This might done, for example if it is a prioi known which channels are suceptible to bleed through into other channels, or if it is known certain channels contain legitimately similar signal that is not the result of bleed through. Ultimately you should put as much information as is known into this matrix to achieve optimal image restoration. The names of columns and rows in the .csv file is irrelevant and not read by the program, it will assume the fouth row corresponds to the fourth channel, so if you do name the columns and rows ensure they correspond to the order in which they appear in the tiff stack. The program automatically detects the presence of a veto matrix (just give it the same name as the target tiff file, but ending in .csv), so you can simply run:
+
+```python
+cd <masterdirectoryname>
+conda activate DD
+python debleed.py IMC_smallcrop_withcsv/IMC_smallcrop.tif 21
+```
+
+The denoiser and debleeder/denoiser combo can be run in the exact same way:
+
+```python
+cd <masterdirectoryname>
+conda activate DD
+python debleed_and_denoise.py IMC_smallcrop_withcsv/IMC_smallcrop.tif 21
+python denoise.py IMC_smallcrop/IMC_smallcrop.tif 21
+```
+
+
 # Using Domino Denoise on your 2D grayscale data
 
 Create a folder in the master directory (the directory that contains DD.py) and put your noisy images into it. Then open anaconda prompt/terminal and run the following:
