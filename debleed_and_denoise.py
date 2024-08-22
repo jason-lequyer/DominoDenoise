@@ -656,9 +656,6 @@ if __name__ == "__main__":
         dom2d = np.clip(dom2d, np.min(inp[oz,:,:]), np.max(inp[oz,:,:]))
         
         
-        
-        imwrite('heyy.tif',dom2d.cpu().detach().numpy())
-        print("--- %s seconds ---" % (time.time() - start_time)) 
  
 
     notdone = True
