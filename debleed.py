@@ -190,7 +190,7 @@ if __name__ == "__main__":
     
     path_file_name = Path(file_name)
 
-    oz = int(sys.argv[2]) + 1 
+    oz = int(sys.argv[2]) - 1
 
     start_time = time.time()
     
