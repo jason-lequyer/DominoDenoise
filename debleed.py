@@ -545,10 +545,8 @@ if __name__ == "__main__":
         rfdomstd = rfdomstd/rfdommean
         
         
-        imwrite('domino.tif', rfdomstd[:,0].view(patsize-2,patsize-2).cpu().detach().numpy())
         basediff = torch.abs(rf - rfdomstd)
         
-        imwrite('base.tif', rf[:,0].view(patsize-2,patsize-2).cpu().detach().numpy())
         
         basediff = torch.sum(basediff, axis=0)
 
@@ -635,7 +633,6 @@ if __name__ == "__main__":
             trumeancomp = trumeancomp.view(1,1,trumeancomp.shape[-1])
             trumeancomp[trumeancomp==0] = FLOAT32_MIN
             
-            imwrite('other.tif', rfdomstd[:,0].view(patsize-2,patsize-2).cpu().detach().numpy())
             
             
             whurdif = torch.where((compdiff<basediff) & (trumeanbase[0,0,:]<trumeancomp[0,0,:]))[0]
