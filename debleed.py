@@ -672,7 +672,7 @@ if __name__ == "__main__":
     
 
             
-    imwrite(file_name[:-4] + '_Channel_'+str(oz+1)+'_nobleed.tif', img, imagej=True)
+    imwrite(file_name[:-4] + '_Channel_'+str(oz+1)+'_debleed.tif', img, imagej=True)
 
 print("--- %s seconds ---" % (time.time() - start_time)) 
 torch.cuda.empty_cache()
