@@ -164,7 +164,6 @@ if __name__ == "__main__":
         
 
     file_name =  sys.argv[1]
-    #file_name = '/home/user/Downloads/ResultsChannelBan/zoltan/test2.tif'
     filenoext = os.path.splitext(file_name)[0]
 
     start_time = time.time()
@@ -191,13 +190,12 @@ if __name__ == "__main__":
     
     path_file_name = Path(file_name)
 
-    oz = int(sys.argv[2]) 
+    oz = int(sys.argv[2]) + 1 
 
     start_time = time.time()
     
     base2d = torch.clone(inpnorm[oz,:,:])
 
-    #colum = (np.append(colum[0],oz))
     compare3d = torch.clone(inpnorm)
     
 
