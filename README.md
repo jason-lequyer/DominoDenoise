@@ -16,7 +16,7 @@ Open Anaconda Prompt (or terminal if on Mac/Linux) and enter the following comma
 ```python
 conda create --name DD
 conda activate DD
-conda install pytorch::pytorch=2.4.0
+conda install conda-forge::pytorch-gpu=2.4.0
 conda install conda-forge::tifffile=2023.2.28
 conda install anaconda::pandas=2.2.2
 conda install anaconda::scipy=1.13.1
