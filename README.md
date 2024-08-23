@@ -130,3 +130,26 @@ python P2S.py Microscope_gaussianpoisson
 python N2FDOM.py Microscope_gaussianpoisson
 ```
 
+# Reproducing Figure 1 results
+
+To track the PSNR over time of RefineOT denoise, do the following:
+
+```python
+cd <masterdirectoryname>
+cd Fig1
+python add_gaussian_noise.py 345 25
+python TrackPSNR.py
+```
+The denoised results will be in the directory 'Microscope_gaussianpoisson_denoised'.
+
+To run DD on our other datasets we first need to add synthetic gasussian noise. For example to test DD on Set12 with sigma=25 gaussian noise, we would first: 
+```python
+cd <masterdirectoryname>
+python add_gaussian_noise.py Set12 25
+```
+This will create the folder 'Set12_gaussian25' which we can now denoise:
+
+```python
+python denoise2D.py Set12_gaussian25/01.tif
+```
+Which returns the denoised results in a folder named 'Set12_gaussian25_denoised'.
