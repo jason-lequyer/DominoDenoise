@@ -21,9 +21,9 @@ conda activate DD
 Now follow the instructions here to get a command you can enter to install pytorch: https://pytorch.org/get-started/locally/. If you have a GPU, select one of the compute platforms that starts with 'CUDA'. The command the website spits out should start with 'pip3'. Enter that command into the terminal and press enter, then once it's installed proceed as follows to install some additonal needed libraries:
 
 ```python
-conda install conda-forge::tifffile=2023.2.28
-conda install anaconda::pandas=2.2.2
-conda install anaconda::scipy=1.13.1
+conda install conda-forge::tifffile
+conda install anaconda::pandas
+conda install anaconda::scipy
 ```
 
 If the installs don't work, removing the specific version may fix this. To do this, remove everything after the equals sign, including the equals sign (e.g. conda install pytorch::pytorch).
