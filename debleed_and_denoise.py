@@ -165,7 +165,6 @@ if __name__ == "__main__":
     file_name =  sys.argv[1]
     filenoext = os.path.splitext(file_name)[0]
 
-    start_time = time.time()
     print(file_name)
     
     inp = imread(file_name)
@@ -654,6 +653,9 @@ if __name__ == "__main__":
         dom2d = dom2d/dummy
         
         dom2d = np.clip(dom2d, np.min(inp[oz,:,:]), np.max(inp[oz,:,:]))
+        
+        print("--- %s seconds ---" % (time.time() - start_time))
+        print(f"Debleeding was completed in {time.time() - start_time}, starting denoising which usually takes about 40x as long, possibly longer if not using a GPU")
         
         
  
