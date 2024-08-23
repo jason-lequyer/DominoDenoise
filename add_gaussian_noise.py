@@ -7,7 +7,7 @@ from pathlib import Path
 if __name__ == "__main__":
     
     folder = sys.argv[1]
-    sigma = np.int(sys.argv[2]) 
+    sigma = np.int32(sys.argv[2]) 
 
     mask_file_list = [f for f in os.listdir(folder+'/')]
     outfolder = folder+'_gaussian'+str(sigma)
