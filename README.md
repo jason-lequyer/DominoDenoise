@@ -16,7 +16,11 @@ Open Anaconda Prompt (or terminal if on Mac/Linux) and enter the following comma
 ```python
 conda create --name DD
 conda activate DD
-conda install conda-forge::pytorch-gpu=2.4.0
+```
+
+Now follow the instructions here to get a command you can enter to install pytorch. It should start with 'pip3'. Enter that command into the terminal and press enter, then once it's installed proceed as follows to install some additonal needed libraries:
+
+```python
 conda install conda-forge::tifffile=2023.2.28
 conda install anaconda::pandas=2.2.2
 conda install anaconda::scipy=1.13.1
