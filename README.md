@@ -72,6 +72,13 @@ python DD.py <noisyfolder>/<noisyimagename>
 ```
 Replacing "masterdirectoryname" with the full path to the directory that contains DD.py, replacing "noisyfolder" with the name of the folder containing images you want denoised and replacing "noisyimagename" with the name of the image file you want denoised. Results will be saved to the directory '<noisyolder>_denoised'. Issues may arise if using an image format that is not supported by the tifffile python package, to fix these issues you can open your images in ImageJ and re-save them as .tif (even if they were already .tif, this will convert them to ImageJ .tif).
 
+# Reproducibility
+
+To run anything beyond this point in the readme, we need to install another conda library:
+
+```python
+conda install anaconda::scikit-image=0.23.2
+```
 
 # Using DD on provided datasets
 
@@ -140,16 +147,4 @@ cd Fig1
 python add_gaussian_noise.py 345 25
 python TrackPSNR.py
 ```
-The denoised results will be in the directory 'Microscope_gaussianpoisson_denoised'.
 
-To run DD on our other datasets we first need to add synthetic gasussian noise. For example to test DD on Set12 with sigma=25 gaussian noise, we would first: 
-```python
-cd <masterdirectoryname>
-python add_gaussian_noise.py Set12 25
-```
-This will create the folder 'Set12_gaussian25' which we can now denoise:
-
-```python
-python denoise2D.py Set12_gaussian25/01.tif
-```
-Which returns the denoised results in a folder named 'Set12_gaussian25_denoised'.
