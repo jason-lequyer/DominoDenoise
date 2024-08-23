@@ -18,7 +18,7 @@ conda create --name DD
 conda activate DD
 ```
 
-Now follow the instructions here to get a command you can enter to install pytorch. It should start with 'pip3'. Enter that command into the terminal and press enter, then once it's installed proceed as follows to install some additonal needed libraries:
+Now follow the instructions here to get a command you can enter to install pytorch: https://pytorch.org/get-started/locally/. It should start with 'pip3'. Enter that command into the terminal and press enter, then once it's installed proceed as follows to install some additonal needed libraries:
 
 ```python
 conda install conda-forge::tifffile=2023.2.28
