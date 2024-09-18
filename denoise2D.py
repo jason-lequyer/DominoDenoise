@@ -108,7 +108,7 @@ if __name__ == "__main__":
         functions = [lambda x: x, lambda x: np.rot90(x), lambda x: np.rot90(np.rot90(x)), lambda x: np.rot90(np.rot90(np.rot90(x))), lambda x: np.flipud(x), lambda x: np.fliplr(x), lambda x: np.rot90(np.fliplr(x)), lambda x: np.fliplr(np.rot90(x))]
         ifunctions = [lambda x: x, lambda x: np.rot90(x,-1), lambda x: np.rot90(np.rot90(x,-1),-1), lambda x: np.rot90(np.rot90(np.rot90(x,-1),-1),-1), lambda x: np.flipud(x), lambda x: np.fliplr(x), lambda x: np.rot90(np.fliplr(x)), lambda x: np.fliplr(np.rot90(x))]
         folder = sys.argv[1]
-        outfolder = folder+'_DD'
+        outfolder = folder+'_denoised'
         Path(outfolder).mkdir(exist_ok=True)
             
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
